@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 mongoose.Promise = global.Promise;
 const slug = require('slugs');
+const striptags = require('striptags');
 
 const storeSchema = new mongoose.Schema({
   name: {
@@ -51,6 +52,7 @@ storeSchema.pre('save', async function(next) {
     next(); // skip it
     return;
   }
+  this.name = striptags(this.name);
   this.slug = slug(this.name);
   const slugRegEx = new RegExp(`^(${this.slug})((-[0-9]*)?)$`, 'i');
   const storesWithSlug = await this.constructor.find({slug: slugRegEx});
